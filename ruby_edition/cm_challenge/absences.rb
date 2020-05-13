@@ -8,11 +8,11 @@ module CmChallenge
       # Your implementation here
       absences = CmChallenge::Api.absences
       members = CmChallenge::Api.members
-      cal = generate_events(absences, members)
+      cal = add_events_to_calendar(absences, members)
       generate_file(cal)
     end
 
-    def generate_events(absences, members)
+    def add_events_to_calendar(absences, members)
       calendar = Icalendar::Calendar.new
       # remove what looks like duplicate events
       absences.uniq! { |mem| mem.values_at(:user_id, :start_date, :end_date) }
@@ -42,14 +42,14 @@ module CmChallenge
       event.dtstart = Icalendar::Values::Date.new(parse_date(absence[:start_date]))
       event.dtend = Icalendar::Values::Date.new(parse_date(absence[:end_date]))
       event
+    rescue ArgumentError
+      "Invalid date passed"
     end
 
     # doing this because Icalendar can't parse dates in example format, i.e "2017-01-01"
     # returns an ICalendar DateTime object
     def parse_date(date)
       Icalendar::Values::DateOrDateTime.new(date)
-    rescue ArgumentError
-      p "Invalid date"
     end
   end
 
