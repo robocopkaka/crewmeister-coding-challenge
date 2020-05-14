@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+</head>
+<body>
+<p>
+    <%= CmChallenge::Api.members %>
+</p>
+
+<form action="/download" method="GET">
+  <p>User ID: <input type="text" name="userId" /></p>
+  <p>
+    <span>From: </span> <input type="date" name="startDate" />
+    <span>To: </span> <input type="date" name="endDate" />
+  </p>
+  <p><input type="submit" value="Test" onclick="confirm('Do you want to download this')"></p>
+</form>
+</body>
+</html>
