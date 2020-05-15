@@ -8,10 +8,33 @@ set :views, settings.root
 set :port, 3000
 
 get '/' do
-  erb :index
+  if params.empty?
+    erb :index
+  else
+    CmChallenge::Absences
+      .new(
+        user_id: params[:userId],
+        start_date: params[:startDate],
+        end_date: params[:endDate],
+        ).to_ical
+
+    unless Dir["invites/**/*.ics"].last.nil?
+      send_file Dir["invites/**/*.ics"].last
+    end
+    "No events were found matching the supplied parameters"
+  end
 end
 
-get '/download' do
-  CmChallenge::Absences.new.to_ical
-  send_file Dir["invites/**/*.ics"].last
+post '/' do
+  p params
+  CmChallenge::Absences
+    .new(
+      user_id: params[:user_id],
+      start_date: params[:start_date],
+      end_date: params[:end_date],
+    ).to_ical
+  unless Dir["invites/**/*.ics"].last.nil?
+    send_file Dir["invites/**/*.ics"].last
+  end
+  "No events were found matching the supplied parameters"
 end

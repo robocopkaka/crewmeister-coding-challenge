@@ -4,11 +4,10 @@
     <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
 </head>
 <body>
-<p>
-    <%= CmChallenge::Api.members %>
-</p>
 
-<form action="/download" method="GET">
+<h1>Download ics file</h1>
+
+<form action="/" method="POST">
   <p>User ID: <input type="text" name="userId" /></p>
   <p>
     <span>From: </span> <input type="date" name="startDate" />
