@@ -1,12 +1,11 @@
 source 'https://rubygems.org'
 
 gem 'icalendar'
-gem 'rspec'
-gem 'guard-rspec', require: false
 gem 'sinatra'
-gem 'shotgun'
 
 group :development do
   gem 'shotgun'
   gem 'pry'
+  gem 'rspec'
+  gem 'guard-rspec', require: false
 end
