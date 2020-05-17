@@ -1,60 +1,53 @@
 import { members, absences } from './api';
-// import ics from 'ics';
+import fs, { writeFileSync } from 'fs';
 const ics = require('ics');
 
 class Absences {
   constructor() {
-    this.members = [];
-    const self = this;
-    members().then((member) => {
-      return this.members = member;
-    })
-    this.getMembers = this.getMembers.bind(this)
-  }
-
-  async getMembers() {
-    return await members();
-  }
-
-  async getAbsences() {
-    return await absences();
+    this.calendarEvents = [];
   }
 
   toIcal() {
-
-  }
-
-  addEventsToCalendar() {
-    absences().then((absences_promise) => {
+    absences().then(async (absences_promise) => {
       let user;
-      absences_promise.forEach((absence) => {
-        members().then((mems) => {
-          user = mems.find(member => member.userId === absence.userId);
-          ics.createEvent(this.createEvent(user.name, absence), (err, value) => {
-            if(err) {
-              console.log(err);
-              return
-            }
+      let allMembers = await members();
+      for (let absence of absences_promise) {
+        user = allMembers.find(member => member.userId === absence.userId);
+        this.calendarEvents.push(this.createEvent(user.name, absence))
+      }
+      const { error, value } = ics.createEvents(this.calendarEvents)
 
-            console.log(value)
-          });
-        });
-      });
+      if (error) {
+        console.log(error)
+        return
+      }
+      this.createFile(value);
     });
   }
 
   createEvent(userName, absence) {
     return {
-      start: [new Date(absence.startDate)],
-      end: [new Date(absence.endDate)],
-      summary: `${userName} ${this.prettifyMessage(absence.type)}`
+      start: this.parseDate(absence.startDate),
+      end: this.parseDate(absence.endDate),
+      title: `${userName} ${this.prettifyMessage(absence.type)}`
     };
   }
 
   prettifyMessage(type) {
     return type === 'vacation' ? 'is on vacation' : 'is sick'
   }
+
+  parseDate(date) {
+    return date.split("-").map(number => parseInt(number, 10))
+  }
+
+  async createFile(value) {
+    await fs.promises.mkdir(`${__dirname}/invites`, { recursive: true });
+
+    const eventName = `event-${new Date().toISOString()}`
+    writeFileSync(`${__dirname}/invites/${eventName}.ics`, value);
+  }
 }
 
 const absence = new Absences();
-absence.addEventsToCalendar();
+absence.toIcal();
