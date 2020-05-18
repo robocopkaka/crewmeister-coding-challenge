@@ -12,7 +12,7 @@ class Absences {
       let user;
       let allMembers = await members();
       for (let absence of absences_promise) {
-        user = allMembers.find(member => member.userId === absence.userId);
+        user = allMembers.find(member => member['userId'] === absence['userId']);
         this.calendarEvents.push(this.createEvent(user.name, absence))
       }
       const { error, value } = ics.createEvents(this.calendarEvents)
@@ -21,14 +21,14 @@ class Absences {
         console.log(error)
         return
       }
-      this.createFile(value);
+      await this.createFile(value);
     });
   }
 
   createEvent(userName, absence) {
     return {
-      start: this.parseDate(absence.startDate),
-      end: this.parseDate(absence.endDate),
+      start: this.parseDate(absence['startDate']),
+      end: this.parseDate(absence['endDate']),
       title: `${userName} ${this.prettifyMessage(absence.type)}`
     };
   }
@@ -45,9 +45,13 @@ class Absences {
     await fs.promises.mkdir(`${__dirname}/invites`, { recursive: true });
 
     const eventName = `event-${new Date().toISOString()}`
-    writeFileSync(`${__dirname}/invites/${eventName}.ics`, value);
+    writeFileSync(`${__dirname}/invites/${eventName}.ics`, value, (err, res) => {
+      console.log("Shit done");
+    });
   }
 }
 
-const absence = new Absences();
-absence.toIcal();
+export default Absences;
+//
+// const absence = new Absences();
+// absence.toIcal();
