@@ -91,6 +91,8 @@ module CmChallenge
     end
   end
 
+  # examples
+
   # hero = CmChallenge::Absences
   #        .new(
   #          user_id: 644,
