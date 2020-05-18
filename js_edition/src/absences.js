@@ -52,6 +52,6 @@ class Absences {
 }
 
 export default Absences;
-//
+// example
 // const absence = new Absences();
 // absence.toIcal();

@@ -31,7 +31,3 @@ get '/' do
     download_file
   end
 end
-
-post '/' do
-  download_file
-end
